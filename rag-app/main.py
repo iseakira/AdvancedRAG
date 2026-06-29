@@ -1,24 +1,44 @@
-from langchain_community.document_loaders import GitLoader
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
+from langchain_core.documents import Document
 from dotenv import load_dotenv
 
+import json
 import os
 from tqdm import tqdm
+
 load_dotenv()
 
-def file_filter(file_path:str) -> bool:
-  return file_path.endswith(".mdx")
+def load_jsonl_documents(file_path: str) -> list[Document]:
+    documents = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line.strip():
+                data = json.loads(line)
+                # すべてのフィールドをembedding対象に
+                text = f"Title: {data['title']}\n\nAuthors: {', '.join(data['authors'])}\n\nVenue: {data['venue']}\n\nYear: {data['year']}\n\nTrack: {data.get('track')}\n\nAward: {data.get('award')}\n\nAbstract: {data['abstract']}"
 
-loader = GitLoader(
-    clone_url="https://github.com/tiangolo/fastapi",
-    repo_path="./fastapi",
-    branch="master",
-    file_filter=lambda f: f.endswith(".md"),
-)
+                # メタデータも保持
+                metadata = {
+                    "paper_id": data["paper_id"],
+                    "authors": ", ".join(data["authors"]),
+                    "venue": data["venue"],
+                    "year": data["year"],
+                    "track": data.get("track"),
+                    "award": data.get("award"),
+                    "source_url": data["source_url"],
+                    "pdf_url": data.get("pdf_url"),
+                    "arxiv_id": data.get("arxiv_id"),
+                    "doi": data.get("doi"),
+                    "openreview_id": data.get("openreview_id"),
+                    "anthology_id": data.get("anthology_id")
+                }
 
-print("Loading documents...")
-documents = loader.load()
+                documents.append(Document(page_content=text, metadata=metadata))
+    return documents
+
+print("Loading documents from JSONL...")
+documents = load_jsonl_documents("./data/paper_metadata.jsonl")
 print(f"Loaded: {len(documents)} documents")
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
@@ -30,7 +50,11 @@ batches = [documents[i:i+batch_size] for i in range(0, len(documents), batch_siz
 db = None
 for batch in tqdm(batches, desc="Embedding", unit="batch"):
     if db is None:
-        db = Chroma.from_documents(batch, embeddings)
+        db = Chroma.from_documents(
+            batch,
+            embeddings,
+            persist_directory="./chroma_db"
+        )
     else:
         db.add_documents(batch)
 

@@ -5,7 +5,7 @@ LANGSmith https://smith.langchain.com/o/c9afdde1-66b1-4c1d-b945-3e58e56f3900/set
 
 ## LirQA
 
-- 構造確認用bashコード
+- 構造確認用bashコード①
   for file in littraceqa_release.jsonl littraceqa_release_report.json paper_metadata.jsonl sample_submission.jsonl validation.jsonl validation_inputs.jsonl; do
   echo "========================================"
   echo "FILE: $file"
@@ -20,3 +20,6 @@ LANGSmith https://smith.langchain.com/o/c9afdde1-66b1-4c1d-b945-3e58e56f3900/set
   "
   echo ""
   done
+
+- 構造化確認bashコード②
+  head -n 1 ./LitTraceQA/paper_metadata.jsonl | python3 -m json.tool | head -50

@@ -13,23 +13,27 @@ db = Chroma(
     embedding_function=OpenAIEmbeddings(model="text-embedding-3-small")
 )
 
-prompt = ChatPromptTemplate.from_template('''
-以下の文脈だけを踏まえて質問に回答してください。
 
-文脈: """
-{context}
-"""
 
-質問: {question}
-''')
+
+hypothetical_prompt = ChatPromptTemplate.from_template(
+  '''
+次の質問に回答する一文を書いてください
+
+質問:{question}
+'''
+)
 
 model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+hypothetical_chain = hypothetical_prompt | model | StrOutputParser
+
+
 retriever = db.as_retriever()
 
-chain = {
+hyde_rag_chain = {
     "question": RunnablePassthrough(),
-    "context": retriever,
-} | prompt | model | StrOutputParser()
+    "context": hypothetical_chain | retriever,
+} | hypothetical_prompt| model | StrOutputParser()
 
-result = chain.invoke("論文について教えて")
+result = hyde_rag_chain.invoke("論文について教えて")
 print(result)

@@ -11,10 +11,10 @@ def file_filter(file_path:str) -> bool:
   return file_path.endswith(".mdx")
 
 loader = GitLoader(
-    clone_url="https://github.com/langchain-ai/langchain",
-    repo_path="./langchain",
+    clone_url="https://github.com/tiangolo/fastapi",
+    repo_path="./fastapi",
     branch="master",
-    file_filter=file_filter,
+    file_filter=lambda f: f.endswith(".md"),
 )
 
 print("Loading documents...")

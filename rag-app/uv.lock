@@ -1934,6 +1934,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "python-dotenv" },
     { name = "tavily-python" },
+    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -1945,6 +1946,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = "==0.2.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "tavily-python", specifier = "==0.5.0" },
+    { name = "tqdm", specifier = ">=4.68.3" },
 ]
 
 [[package]]

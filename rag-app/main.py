@@ -18,12 +18,12 @@ def load_jsonl_documents(file_path: str) -> list[Document]:
                 # すべてのフィールドをembedding対象に
                 text = f"Title: {data['title']}\n\nAuthors: {', '.join(data['authors'])}\n\nVenue: {data['venue']}\n\nYear: {data['year']}\n\nTrack: {data.get('track')}\n\nAward: {data.get('award')}\n\nAbstract: {data['abstract']}"
 
-                # メタデータも保持
-                metadata = {
+                # メタデータも保持（Noneは除外）
+                metadata = {k: v for k, v in {
                     "paper_id": data["paper_id"],
                     "authors": ", ".join(data["authors"]),
                     "venue": data["venue"],
-                    "year": data["year"],
+                    "year": str(data["year"]),
                     "track": data.get("track"),
                     "award": data.get("award"),
                     "source_url": data["source_url"],
@@ -32,7 +32,7 @@ def load_jsonl_documents(file_path: str) -> list[Document]:
                     "doi": data.get("doi"),
                     "openreview_id": data.get("openreview_id"),
                     "anthology_id": data.get("anthology_id")
-                }
+                }.items() if v is not None}
 
                 documents.append(Document(page_content=text, metadata=metadata))
     return documents

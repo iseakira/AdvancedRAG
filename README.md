@@ -23,3 +23,7 @@ LANGSmith https://smith.langchain.com/o/c9afdde1-66b1-4c1d-b945-3e58e56f3900/set
 
 - 構造化確認bashコード②
   head -n 1 ./LitTraceQA/paper_metadata.jsonl | python3 -m json.tool | head -50
+
+## ファイルの役割
+
+ファイル役割件数validation_inputs.jsonl入力（システムが受け取るクエリ）55件validation.jsonl正解付きバリデーションセット55件littraceqa_release.jsonlテストセット（正解なし・提出対象）56件sample_submission.jsonl提出フォーマットのサンプル55件paper_metadata.jsonl検索対象の論文コーパス27,487件littraceqa_release_report.jsonコンペの統計レポート（JSONLじゃないのでエラーになった）
